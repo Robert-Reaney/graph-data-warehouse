@@ -29,7 +29,8 @@ def make_layout():
                                 id='dacis-id',
                                 type='text',
                                 value='161690'
-                            )
+                            ),
+                            html.P(id='node-click')
                         ],
                         width=3,
                         className='mb-4'
@@ -44,7 +45,7 @@ def make_layout():
                             stylesheet=[
                                 {'selector': 'node', 'style': {'content': 'data(label)'}},
                                 {'selector': 'edge', 'style': {'content': 'data(label)'}},
-                                {'selector': '.company', 'style': {'shape': 'triangle'}},
+                                {'selector': '.company', 'style': {'shape': 'triangle', 'color': 'red'}},
                                 {'selector': '.entity', 'style': {'shape': 'circle'}}
                             ]
                         ),

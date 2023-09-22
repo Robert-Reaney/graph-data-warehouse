@@ -49,7 +49,7 @@ services:
       - default
     depends_on:
       - database
-    restart: always
+    # restart: always
 
 networks:
   default:

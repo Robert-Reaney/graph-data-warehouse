@@ -80,7 +80,7 @@ class ImportHelper:
     LOAD CSV WITH HEADERS FROM 'file:///silver_dacis_edges_companies_to_dod_budget.csv' AS row
     
     MERGE (b:Budget {id: row.dod_budget_id})
-    ON CREATE SET b.title = row.budget_title,
+    ON CREATE SET b.name = row.budget_title,
         b.fiscal_year = row.fiscal_year,
         b.type = row.budget_type,
         b.lineno = row.budget_line_number
