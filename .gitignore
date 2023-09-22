@@ -3,3 +3,4 @@ data
 import
 logs
 datasets
+*__pycache__

@@ -10,6 +10,7 @@ services:
     environment:
       - NEO4J_AUTH=none
       - NEO4J_dbms_security_allow__csv__import__from__file__urls=true
+      - NEO4J_server_default__listen__address=0.0.0.0
       # - NEO4J_dbms__memory__transaction__total__max
     volumes:
       - ./data:/data:rw
@@ -19,13 +20,36 @@ services:
     networks:
       - default
 
-  dashboard:
-    container_name: neodash
-    image: neo4jlabs/neodash:2.3.4
+  # dashboard:
+  #   container_name: neodash
+  #   image: neo4jlabs/neodash:2.3.4
+  #   ports:
+  #     - "5005:5005"
+  #   networks:
+  #     - default 
+
+  plotly:
+    container_name: plotly_dash
+    image: python:3.9-slim-bullseye
     ports:
       - "5005:5005"
+    volumes:
+      - ./services/frontend:/wd
+    build:
+      context: ./services/frontend
+
+      dockerfile_inline: |
+        FROM python:3.9-slim-bullseye
+        WORKDIR /wd
+        COPY requirements.txt requirements.txt
+        RUN pip install -r ./requirements.txt
+
+    command: ["python3", "app.py"]
     networks:
       - default
-  
+    depends_on:
+      - database
+    restart: always
+
 networks:
   default:

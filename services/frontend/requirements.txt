@@ -1,7 +1,6 @@
-neo4j
-boto3
 pandas
 plotly
 dash
 dash-bootstrap-components
 dash-cytoscape
+neo4j
