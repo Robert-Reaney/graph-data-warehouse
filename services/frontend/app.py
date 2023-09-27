@@ -26,6 +26,7 @@ app.layout = make_layout()
 from dash.dependencies import Input, Output, State
 @app.callback(
     Output('graph-viewer', 'elements', allow_duplicate=True),
+    Output('graph-viewer', 'layout', allow_duplicate=True),
     Input('query-button', 'n_clicks'),
     State('dacis-id', 'value'),
     prevent_initial_call = True
@@ -34,7 +35,8 @@ def update_graph(n_clicks, dacis_id):
     graph_data = neodata.test_ubo(dacis_id)
     # graph_data = neodata.ubo_query(dacis_id)
     logging.info(f'graph update triggered for dacis_id={dacis_id} with graph_data={graph_data}')
-    return graph_data
+    return [graph_data, {'name': 'breadthfirst', 'roots': f'#{dacis_id}'}]
+    # return graph_data
 
 @app.callback(
     Output('node-click', 'children'),
@@ -45,6 +47,7 @@ def update_graph(n_clicks, dacis_id):
 )
 def click_node(data, elements):
     if data:
+        text = "You clicked: " + data['label']
         logging.info(f'clicked {data}')
 
         if len(data['id']) < 10:
@@ -58,7 +61,17 @@ def click_node(data, elements):
             # need to remove the clicked node so it isn't duplicated
             # extra_elements = [x for x in dash_elements if x['data']['id']]
 
-        return ["You clicked: " + data['label'], elements]
+            if len(dash_elements) == 0:
+                text += f'\n and found no related budgets found for {data["label"]}'
+            else:
+                budget_ids = []
+                for element in dash_elements:
+                    _id = element['data'].get('id', None)
+                    if _id and element['classes'] == 'budget':
+                        budget_ids.append(_id)
+                text += f"\n and found related budget_ids of {budget_ids}"
+
+        return [text, elements]
         
 
 

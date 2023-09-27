@@ -28,7 +28,7 @@ def make_layout():
                             dcc.Input(
                                 id='dacis-id',
                                 type='text',
-                                value='161690'
+                                value='152516'
                             ),
                             html.P(id='node-click')
                         ],
@@ -39,7 +39,9 @@ def make_layout():
                     dbc.Col(
                         cyto.Cytoscape(
                             id='graph-viewer',
-                            layout={'name': 'breadthfirst'},
+                            layout={
+                                'name': 'breadthfirst'
+                            },
                             style={'width': '100%', 'height': '600px'},
                             elements=[],
                             stylesheet=[
