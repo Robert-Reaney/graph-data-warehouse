@@ -14,11 +14,33 @@ services:
       # - NEO4J_dbms__memory__transaction__total__max
     volumes:
       - ./data:/data:rw
-      - ./logs:/logs:rw
+      - ./logs/neo4j:/logs/neo4j:rw
       - ./import:/import
       - ./conf:/conf
     networks:
       - default
+    restart: always
+
+  api:
+    container_name: graph_db_api
+    build:
+      context: ./services/api
+      dockerfile_inline: |
+        FROM python:3.9-slim-bullseye
+        WORKDIR /wd
+        COPY requirements.txt .
+        RUN pip install --no-cache-dir -r requirements.txt
+    volumes:
+      - ./logs/api:/var/log/api
+      - ./services/api/:/wd
+    ports:
+      - 5005:5005
+    networks:
+      - default
+    command:
+      sh -c "echo Running in Development &&
+            uvicorn main:app --reload --host 0.0.0.0 --port 5005 --reload > /var/log/api/api.log 2>&1"
+    restart: always
 
   # dashboard:
   #   container_name: neodash
@@ -28,28 +50,27 @@ services:
   #   networks:
   #     - default 
 
-  plotly:
-    container_name: plotly_dash
-    image: python:3.9-slim-bullseye
-    ports:
-      - "5005:5005"
-    volumes:
-      - ./services/frontend:/wd
-    build:
-      context: ./services/frontend
+  # plotly:
+  #   container_name: plotly_dash
+  #   image: python:3.9-slim-bullseye
+  #   ports:
+  #     - "5005:5005"
+  #   volumes:
+  #     - ./services/frontend:/wd
+  #   build:
+  #     context: ./services/frontend
 
-      dockerfile_inline: |
-        FROM python:3.9-slim-bullseye
-        WORKDIR /wd
-        COPY requirements.txt requirements.txt
-        RUN pip install -r ./requirements.txt
+  #     dockerfile_inline: |
+  #       FROM python:3.9-slim-bullseye
+  #       WORKDIR /wd
+  #       COPY requirements.txt requirements.txt
+  #       RUN pip install -r ./requirements.txt
 
-    command: ["python3", "app.py"]
-    networks:
-      - default
-    depends_on:
-      - database
-    # restart: always
+  #   command: ["python3", "app.py"]
+  #   networks:
+  #     - default
+  #   depends_on:
+  #     - database
 
 networks:
   default:
