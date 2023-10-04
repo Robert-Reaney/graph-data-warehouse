@@ -25,7 +25,8 @@ class Neo4jDriver:
         """A generic query function that returns the neo4j result graph"""
         with GraphDatabase.driver(self.uri) as driver:
             result = driver.execute_query(string, database_='neo4j', result_transformer_= neo4j.Result.graph)
-        return nx.cytoscape_data(self._cypher_to_netx(result))
+        graph = self._cypher_to_netx(result)
+        return nx.cytoscape_data(graph)
 
     def get_company_by_name(self, name):
         """Query a company."""
@@ -34,6 +35,26 @@ class Neo4jDriver:
         WHERE c.name = '{name}'
         RETURN b,f,c,m,e,u,ue"""
         return self.query(query)
+    
+    # specific for jefferson
+    def jefferson_company_query(self, name):
+        query = f"""
+        MATCH (b:Budget)<-[f:FUNDED_BY]-(c:Company)-[m:IS_MATCH]->(e:Entity)-[u:HAS_UBO]->(ue:Entity)
+        WHERE c.name = '{name}' and ue.cosc = true
+        RETURN b,f,c,m,e,u,ue"""
+
+        with GraphDatabase.driver(self.uri) as driver:
+            result = driver.execute_query(query, database_='neo4j', result_transformer_= neo4j.Result.graph)
+        graph = self._cypher_to_netx(result)
+        pos = nx.spring_layout(graph)
+        cyto_graph = nx.cytoscape_data(graph)
+
+        for ii, node in enumerate(cyto_graph['elements']['nodes']):
+            _id = cyto_graph['elements']['nodes'][ii]['data']['id']
+            position = pos[_id]
+            cyto_graph['elements']['nodes'][ii]['data']['position'] = position.tolist()
+
+        return cyto_graph
 
     # OLD STUFF
     def ubo_query(self, dacis_id):

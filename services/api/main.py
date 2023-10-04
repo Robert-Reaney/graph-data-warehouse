@@ -23,7 +23,8 @@ def get_company(company_name: str):
 
 @app.get('/search/company/{company_name}', tags=["deprecated"])
 def search_company(company_name: str):
-    return db.get_company_by_name(company_name)
+    graph = db.jefferson_company_query(company_name)
+    return graph
 
 # utilities
 
