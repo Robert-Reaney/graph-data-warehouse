@@ -25,8 +25,9 @@ class Neo4jDriver:
         """A generic query function that returns the neo4j result graph"""
         with GraphDatabase.driver(self.uri) as driver:
             result = driver.execute_query(string, database_='neo4j', result_transformer_= neo4j.Result.graph)
-        graph = self._cypher_to_netx(result)
-        return nx.cytoscape_data(graph)
+        graph = nx.cytoscape_data(self._cypher_to_netx(result))
+        logging.info(graph)
+        return graph['elements']['nodes'] + graph['elements']['edges']
 
     def get_company_by_name(self, name):
         """Query a company."""

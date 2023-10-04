@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import networkx as nx
 
 from schemas import HealthResponse, DacisId
@@ -7,6 +8,14 @@ from utils import Neo4jDriver
 # Instantiate and intialize API
 app = FastAPI()
 db = Neo4jDriver(URI="neo4j://neo4j_database")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://gpurhel8.mil.intellibridgelabs.io:3000", "http://10.100.1.26:3000"],  # Allow this origin (you can also use "*" to allow all origins)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (or specify: ["GET", "POST"])
+    allow_headers=["*"],
+)
 
 # active
 
