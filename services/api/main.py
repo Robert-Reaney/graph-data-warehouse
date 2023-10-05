@@ -28,6 +28,13 @@ def get_company(company_name: str):
     """
     return db.get_company_by_name(company_name)
 
+@app.get('/nodes/{node_id}')
+def get_node(node_id: str):
+    """
+    Get nodal information by id
+    """
+    return db.get_node_by_id(node_id)
+
 # deprecated
 
 @app.get('/search/company/{company_name}', tags=["deprecated"])

@@ -55,6 +55,8 @@ services:
         RUN chmod 600 /root/.ssh/id_rsa
         RUN chmod 777 /app/package-lock.json
         RUN npm install
+        RUN npm install graphology-layout-forceatlas2
+        RUN npm install react-cytoscape
         CMD ["npm", "start"]
     ports:
       - 3000:3000

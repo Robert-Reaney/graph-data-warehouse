@@ -27,7 +27,8 @@ class Neo4jDriver:
             result = driver.execute_query(string, database_='neo4j', result_transformer_= neo4j.Result.graph)
         graph = nx.cytoscape_data(self._cypher_to_netx(result))
         # logging.info(graph)
-        return graph['elements']['nodes'] + graph['elements']['edges']
+        # return graph['elements']['nodes'] + graph['elements']['edges']
+        return graph
 
     def get_company_by_name(self, name):
         """Query a company."""
@@ -37,11 +38,19 @@ class Neo4jDriver:
         RETURN b,f,c,m,e,u,ue"""
         return self.query(query)
     
+    def get_node_by_id(self, _id):
+        query = f"""
+        MATCH (a)
+        WHERE a.id = '{_id}'
+        RETURN a
+        """
+        return self.query(query)
+    
     # specific for jefferson
     def jefferson_company_query(self, name):
         query = f"""
         MATCH (b:Budget)<-[f:FUNDED_BY]-(c:Company)-[m:IS_MATCH]->(e:Entity)-[u:HAS_UBO]->(ue:Entity)
-        WHERE c.name = '{name}' and ue.cosc = true
+        WHERE c.name = '{name}'
         RETURN b,f,c,m,e,u,ue"""
 
         with GraphDatabase.driver(self.uri) as driver:
