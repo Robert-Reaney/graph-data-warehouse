@@ -42,35 +42,30 @@ services:
             uvicorn main:app --reload --host 0.0.0.0 --port 5005 --reload > /var/log/api/api.log 2>&1"
     restart: always
 
-  # dashboard:
-  #   container_name: neodash
-  #   image: neo4jlabs/neodash:2.3.4
-  #   ports:
-  #     - "5005:5005"
-  #   networks:
-  #     - default 
+  ui:
+    container_name: react_ui
+    build:
+      context: ./services/ib-graph-explorer
+      dockerfile_inline: |
+        FROM node:16 AS build
 
-  # plotly:
-  #   container_name: plotly_dash
-  #   image: python:3.9-slim-bullseye
-  #   ports:
-  #     - "5005:5005"
-  #   volumes:
-  #     - ./services/frontend:/wd
-  #   build:
-  #     context: ./services/frontend
+        WORKDIR /app
+        COPY package*.json /app/
+        RUN chmod 777 /app/package-lock.json
+        RUN npm install
+        # COPY node_modules node_modules
+        # COPY public public
+        CMD ["npm", "start"]
+    ports:
+      - 3000:3000
+    volumes:
+      - ./services/ib-graph-explorer/src:/app/src:rw
+      - ./services/ib-graph-explorer/public:/app/public:rw
+      - ./logs/npm:/root/.npm
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - ESLINT_NO_DEV_ERRORS=true
 
-  #     dockerfile_inline: |
-  #       FROM python:3.9-slim-bullseye
-  #       WORKDIR /wd
-  #       COPY requirements.txt requirements.txt
-  #       RUN pip install -r ./requirements.txt
-
-  #   command: ["python3", "app.py"]
-  #   networks:
-  #     - default
-  #   depends_on:
-  #     - database
 
 networks:
   default:
