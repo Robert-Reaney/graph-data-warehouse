@@ -1,0 +1,3 @@
+[submodule "services/ib-graph-explorer"]
+	path = services/ib-graph-explorer
+	url = https://github.com/IntelliBridge/ib-graph-explorer.git
