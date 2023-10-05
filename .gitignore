@@ -4,3 +4,4 @@ import
 logs
 datasets
 *__pycache__
+*/.ssh
