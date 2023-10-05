@@ -1,7 +1,0 @@
-pandas
-plotly
-dash
-dash-bootstrap-components
-dash-cytoscape
-neo4j
-networkx
