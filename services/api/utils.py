@@ -49,8 +49,13 @@ class Neo4jDriver:
     # specific for jefferson
     def jefferson_company_query(self, name):
         query = f"""
-        MATCH (b:Budget)<-[f:FUNDED_BY]-(c:Company)-[m:IS_MATCH]->(e:Entity)-[u:HAS_UBO]->(ue:Entity)
+        MATCH (c:Company)
         WHERE c.name = '{name}'
+        WITH c
+        OPTIONAL MATCH (b:Budget)<-[f:FUNDED_BY]-(c)
+        WITH c, b, f LIMIT 5
+        OPTIONAL MATCH (c)-[m:IS_MATCH]->(e:Entity)
+        OPTIONAL MATCH (e)-[u:HAS_UBO]->(ue:Entity) WHERE ue.cosc = true
         RETURN b,f,c,m,e,u,ue"""
 
         with GraphDatabase.driver(self.uri) as driver:
